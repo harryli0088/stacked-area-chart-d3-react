@@ -52,25 +52,25 @@ export default class App extends Component {
           keys={keys}
 
           //optional props, shown with defaults
-          color={color}
-          height={500}
-          margin={{top: 20, right: 30, bottom: 30, left: 60}}
-          dateFormat={d3.timeFormat("%Y")}
-          yFormat={function(y) { return y }}
-          xTickSize={5}
-          yTickSize={5}
-          xTicksSkip={3}
-          yMaxTicks={5}
+          areaOpacity={"0.9"} //could be string or number
           axisStroke="#ccc"
           axisStrokeWidth={2}
-          areaOpacity={"0.9"} //could be string or number
-          onMouseOverHandler={function(e, key, dataIndex) {}}
-          onClickHandler={function(e, key, dataIndex) {}}
+          colorFunction={color}
+          dateFormat={d3.timeFormat("%Y")}
           dots={true}
           dotsRadius={10} //could be string or number
           dotsStroke={"#aaa"}
           dotsStrokeWidth={2}
           dotsFilter={"brightness(1.25)"}
+          height={500}
+          margin={{top: 20, right: 30, bottom: 30, left: 60}}
+          onClickHandler={function(e, key, dataIndex) {}}
+          onMouseOverHandler={function(e, key, dataIndex) {}}
+          xTickSize={5}
+          xTicksSkip={3}
+          yTickSize={5}
+          yFormat={function(y) { return y }}
+          yMaxTicks={5}
         />
 
         <svg>
