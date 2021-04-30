@@ -36,14 +36,17 @@ type Props = {
   dotsFilter: string,
   height: number,
   margin: {top: number, right: number, bottom: number, left: number},
-  onClickHandler: (e: React.MouseEvent<SVGPathElement | SVGRectElement>, key:string, dataIndex: number | null) => void,
-  onMouseOverHandler: (e: React.MouseEvent<SVGPathElement | SVGRectElement> | null, key?:string, dataIndex?: number) => void,
+  onClickHandler: (e: CustomEventType, key:string, dataIndex: number | null) => void,
+  onMouseOverHandler: (e: CustomEventType | null, key?:string, dataIndex?: number) => void,
   xTickSize: number,
   xTicksSkip: number,
   yFormat: (y: number) => string,
   yTickSize: number,
   yMaxTicks: number,
 }
+
+type CustomEventType = React.MouseEvent<SVGPathElement | SVGRectElement>
+| React.TouchEvent<SVGPathElement | SVGRectElement>
 
 
 function StackedAreaChart (props:Props) {
@@ -105,10 +108,12 @@ function StackedAreaChart (props:Props) {
   }, [data, margin, width])
 
 
-  const mouseMove = (e: React.MouseEvent<SVGPathElement | SVGRectElement>, key: string) => {
+  const mouseMove = (e: CustomEventType, key: string) => {
     if(ref.current) {
       const boundings = ref.current.getBoundingClientRect(); //get the bounds of the chart
-      const newXHoverIndex = mapPositionToIndex(e.clientX - boundings.left); //calculate the x hover index
+      //@ts-ignore
+      const clientX = e.clientX || e.touches[0].clientX
+      const newXHoverIndex = mapPositionToIndex(clientX - boundings.left); //calculate the x hover index
       if(newXHoverIndex!==xHoverIndex || key!==hoverKey) { //if we should set a new xHoverIndex or hoverKey
         setHoverKey(key);
         setXHoverIndex(newXHoverIndex);
@@ -245,8 +250,8 @@ function StackedAreaChart (props:Props) {
                   fill={colorFunction(d.key)}
                   opacity={areaOpacity}
                   onClick={(e: React.MouseEvent<SVGPathElement | SVGRectElement>)  => onClickHandler(e, d.key, xHoverIndex)}
-                  // onTouchStart={(e: React.MouseEvent<SVGPathElement | SVGRectElement>) => this.props.onClickHandler(e, d.key, xHoverIndex)}
-                  // onTouchMove={(e: React.MouseEvent<SVGPathElement | SVGRectElement>) => this.mouseMove(e, d.key)}
+                  onTouchStart={(e: React.TouchEvent<SVGPathElement | SVGRectElement>) => onClickHandler(e, d.key, xHoverIndex)}
+                  onTouchMove={(e: React.TouchEvent<SVGPathElement | SVGRectElement>) => mouseMove(e, d.key)}
                   onMouseMove={(e: React.MouseEvent<SVGPathElement | SVGRectElement>) => mouseMove(e, d.key)}
                 >
                   <title>{getTitle(d.key, dateFormat)}</title>
@@ -290,58 +295,58 @@ function StackedAreaChart (props:Props) {
 }
 
 
-// //@ts-ignore
-// StackedAreaChart.propTypes = {
-//   data: PropTypes.array.isRequired,
-//   keys: PropTypes.array.isRequired,
-//
-//   areaOpacity: PropTypes.oneOfType([
-//     PropTypes.string,
-//     PropTypes.number
-//   ]),
-//   axisStroke: PropTypes.string,
-//   axisStrokeWidth: PropTypes.number,
-//   colorFunction: PropTypes.func,
-//   dateFormat: PropTypes.func,
-//   dots: PropTypes.bool,
-//   dotsRadius: PropTypes.oneOfType([
-//     PropTypes.string,
-//     PropTypes.number
-//   ]),
-//   dotsStroke: PropTypes.string,
-//   dotsStrokeWidth: PropTypes.number,
-//   dotsFilter: PropTypes.string,
-//   height: PropTypes.number,
-//   margin: PropTypes.object,
-//   onClickHandler: PropTypes.func,
-//   onMouseOverHandler: PropTypes.func,
-//   xTickSize: PropTypes.number,
-//   xTicksSkip: PropTypes.number,
-//   yFormat: PropTypes.func,
-//   yMaxTicks: PropTypes.number,
-//   yTickSize: PropTypes.number,
-// }
-//
-// //@ts-ignore
-// StackedAreaChart.defaultProps = {
-//   areaOpacity: "0.9",
-//   axisStroke: "#ccc",
-//   axisStrokeWidth: 2,
-//   dateFormat: timeFormat("%Y"),
-//   dots: true,
-//   dotsFilter: "brightness(1.25)",
-//   dotsRadius: 10,
-//   dotsStroke: "#aaa",
-//   dotsStrokeWidth: 2,
-//   height: 500,
-//   margin: {top: 20, right: 30, bottom: 30, left: 60},
-//   onClickHandler: function(e: React.MouseEvent<SVGPathElement | SVGRectElement>, key:string, dataIndex: number) {},
-//   onMouseOverHandler: function(e: React.MouseEvent<SVGPathElement | SVGRectElement>, key:string, dataIndex: number) {},
-//   xTickSize: 5,
-//   xTicksSkip: 1,
-//   yFormat: (y: number) => y,
-//   yMaxTicks: 5,
-//   yTickSize: 5,
-// }
+//@ts-ignore
+StackedAreaChart.propTypes = {
+  data: PropTypes.array.isRequired,
+  keys: PropTypes.array.isRequired,
+
+  areaOpacity: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+  axisStroke: PropTypes.string,
+  axisStrokeWidth: PropTypes.number,
+  colorFunction: PropTypes.func,
+  dateFormat: PropTypes.func,
+  dots: PropTypes.bool,
+  dotsRadius: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number
+  ]),
+  dotsStroke: PropTypes.string,
+  dotsStrokeWidth: PropTypes.number,
+  dotsFilter: PropTypes.string,
+  height: PropTypes.number,
+  margin: PropTypes.object,
+  onClickHandler: PropTypes.func,
+  onMouseOverHandler: PropTypes.func,
+  xTickSize: PropTypes.number,
+  xTicksSkip: PropTypes.number,
+  yFormat: PropTypes.func,
+  yMaxTicks: PropTypes.number,
+  yTickSize: PropTypes.number,
+}
+
+//@ts-ignore
+StackedAreaChart.defaultProps = {
+  areaOpacity: "0.9",
+  axisStroke: "#ccc",
+  axisStrokeWidth: 2,
+  dateFormat: timeFormat("%Y"),
+  dots: true,
+  dotsFilter: "brightness(1.25)",
+  dotsRadius: 10,
+  dotsStroke: "#aaa",
+  dotsStrokeWidth: 2,
+  height: 500,
+  margin: {top: 20, right: 30, bottom: 30, left: 60},
+  onClickHandler: function(e: CustomEventType, key:string, dataIndex: number) {},
+  onMouseOverHandler: function(e: CustomEventType, key:string, dataIndex: number) {},
+  xTickSize: 5,
+  xTicksSkip: 1,
+  yFormat: (y: number) => y,
+  yMaxTicks: 5,
+  yTickSize: 5,
+}
 
 export default StackedAreaChart
