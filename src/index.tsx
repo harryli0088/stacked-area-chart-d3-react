@@ -164,12 +164,12 @@ function StackedAreaChart (props:Props) {
   ),[data, margin, width])
 
   const {
-    yAxis,
+    yTicks,
     y,
   } = useMemo(() => {
     const yDomain = [0, max(series, d => max(d, d => d[1])) || 0]
 
-    const yAxis = []; //will hold the numbers to show on the y axis
+    const yTicks = []; //will hold the numbers to show on the y axis
     const rawIncrement = (yDomain[1] - yDomain[0]) / yMaxTicks; //difference between max and min divided by the max number of y ticks
     const digits = Math.log(rawIncrement) * Math.LOG10E + 1 | 0; //get the number digits in this number
     const magnitude = Math.pow(10, digits-1); //the power of 10 with the same number of digits
@@ -177,9 +177,9 @@ function StackedAreaChart (props:Props) {
     //starting at the min, increment by the roundedIncrement until we pass the max
     let i = yDomain[0]
     for(i; i<yDomain[1]; i+=roundedIncrement) {
-      yAxis.push(i);
+      yTicks.push(i);
     }
-    yAxis.push(i); //push an extra rounded increment
+    yTicks.push(i); //push an extra rounded increment
     yDomain[1] = i + yDomain[0] //set the max to the extra rounded increment
 
     const y = scaleLinear()
@@ -187,7 +187,7 @@ function StackedAreaChart (props:Props) {
     .range([height - margin.bottom, margin.top])
 
     return {
-      yAxis,
+      yTicks,
       y,
     }
   }, [data, series, yMaxTicks])
@@ -204,11 +204,13 @@ function StackedAreaChart (props:Props) {
       <svg width={width} height={height} onMouseLeave={mouseLeave}>
         <g>
           {data.map((d,i) => {
-            if(i%xTicksSkip === 0) {
+            if(i%xTicksSkip === 0) { //if we should render this x tick
+              const xPixel = x(d.date) //get the x pixel value
+
               return (
                 <g key={i}>
-                  <line x1={x(d.date)} x2={x(d.date)} y1={height-margin.bottom+xTickSize} y2={margin.top} strokeWidth={axisStrokeWidth} stroke={axisStroke}></line>
-                  <text x={x(d.date)} y={height-margin.bottom+xTickSize} textAnchor="middle" dy="1.25em">{dateFormat(d.date)}</text>
+                  <line x1={xPixel} x2={xPixel} y1={height-margin.bottom+xTickSize} y2={margin.top} strokeWidth={axisStrokeWidth} stroke={axisStroke}></line>
+                  <text x={xPixel} y={height-margin.bottom+xTickSize} textAnchor="middle" dy="1.25em">{dateFormat(d.date)}</text>
                 </g>
               )
             }
@@ -217,31 +219,48 @@ function StackedAreaChart (props:Props) {
         </g>
 
         <g>
-          {yAxis.map((yValue,i) =>
-            <g key={i}>
-              <line key={i} x1={margin.left-yTickSize} x2={width-margin.right} y1={y(yValue)} y2={y(yValue)} strokeWidth={axisStrokeWidth} stroke={axisStroke}></line>
-              <text x={margin.left-yTickSize} y={y(yValue)} textAnchor="end" dx="-5px" dy="0.35em">
-                {yFormat(yValue)}
-              </text>
-            </g>
-          )}
+          {yTicks.map((yTick,i) => {
+            const yPixel = y(yTick) //get the y pixel value
+
+            return (
+              <g key={i}>
+                <line key={i} x1={margin.left-yTickSize} x2={width-margin.right} y1={yPixel} y2={yPixel} strokeWidth={axisStrokeWidth} stroke={axisStroke}></line>
+                <text x={margin.left-yTickSize} y={yPixel} textAnchor="end" dx="-5px" dy="0.35em">
+                  {yFormat(yTick)}
+                </text>
+              </g>
+            )
+          })}
         </g>
 
         <g>
           {series.map((d,i) => {
-            //if there is a data point to show
-            if(d[0]) {
-              const properties = data.length>1 ?
-              {
-                d:area(d),
-              } :
-              {
-                x: x(d[0].data.date)-rectWidth/2,
-                width: rectWidth,
-                y: y(d[0][1]),
-                height: y(d[0][0])-y(d[0][1]),
-              }
-              const Element = data.length>1 ? "path" : "rect"
+            if(d[0]) { //if there is a data point to show
+              //determine the element and properties to render
+              const {
+                Element,
+                properties,
+              } = (() => {
+                //if there are multiple data points, render a path
+                if(data.length > 1) {
+                  return {
+                    Element: "path",
+                    properties: { d:area(d) }
+                  }
+                }
+
+                //else render a stacked bar chart
+                const y1 = y(d[0][1])
+                return {
+                  Element: "rect",
+                  properties: {
+                    x: x(d[0].data.date) - rectWidth/2,
+                    width: rectWidth,
+                    y: y1,
+                    height: y(d[0][0]) - y1,
+                  }
+                }
+              })() //self-invoking function
 
               return (
                 <Element
@@ -262,33 +281,37 @@ function StackedAreaChart (props:Props) {
           })}
         </g>
 
-        {xHoverIndex && data[xHoverIndex] && dots ?
-          <g>
-            <line
-              x1={x(data[xHoverIndex].date)}
-              x2={x(data[xHoverIndex].date)}
-              y1={margin.top}
-              y2={height - margin.bottom}
-              stroke={dotsStroke}
-              strokeWidth={dotsStrokeWidth}
-            ></line>
+        {xHoverIndex && data[xHoverIndex] && dots && (() => {
+          const xPixel = x(data[xHoverIndex].date)
 
-            {keys.map((k,i) =>
-              <circle
-                key={i}
-                cx={x(data[xHoverIndex].date)}
-                cy={y(series[i][xHoverIndex][1])}
-                r={dotsRadius}
-                fill={colorFunction(keys[i])}
+          return (
+            <g>
+              <line
+                x1={xPixel}
+                x2={xPixel}
+                y1={margin.top}
+                y2={height - margin.bottom}
                 stroke={dotsStroke}
                 strokeWidth={dotsStrokeWidth}
-                filter={dotsFilter}
-              >
-                <title>{getTitle(k, dateFormat)}</title>
-              </circle>
-            )}
-          </g>
-        : null}
+              ></line>
+
+              {keys.map((k,i) =>
+                <circle
+                  key={i}
+                  cx={xPixel}
+                  cy={y(series[i][xHoverIndex][1])} //render the dot on the higher side of the path/rect
+                  r={dotsRadius}
+                  fill={colorFunction(k)}
+                  stroke={dotsStroke}
+                  strokeWidth={dotsStrokeWidth}
+                  filter={dotsFilter}
+                >
+                  <title>{getTitle(k, dateFormat)}</title>
+                </circle>
+              )}
+            </g>
+          )
+        })()}
       </svg>
     </div>
   )
