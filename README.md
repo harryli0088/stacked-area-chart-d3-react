@@ -2,6 +2,8 @@
 
 > responsive stacked area chart using d3 and react
 
+https://harryli0088.github.io/stacked-area-chart-d3-react/
+
 ![Demo](/example/stacked-area-chart-d3-react.gif)
 
 GIF created using [https://ezgif.com/video-to-gif](https://ezgif.com/video-to-gif)
