@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/stacked-area-chart-d3-react/static/css/main.3f9ef032.chunk.css",
-    "main.js": "/stacked-area-chart-d3-react/static/js/main.9783c834.chunk.js",
-    "main.js.map": "/stacked-area-chart-d3-react/static/js/main.9783c834.chunk.js.map",
+    "main.css": "/stacked-area-chart-d3-react/static/css/main.ea5f3c37.chunk.css",
+    "main.js": "/stacked-area-chart-d3-react/static/js/main.61fe9155.chunk.js",
+    "main.js.map": "/stacked-area-chart-d3-react/static/js/main.61fe9155.chunk.js.map",
     "runtime-main.js": "/stacked-area-chart-d3-react/static/js/runtime-main.28561014.js",
     "runtime-main.js.map": "/stacked-area-chart-d3-react/static/js/runtime-main.28561014.js.map",
-    "static/js/2.7c2aaf08.chunk.js": "/stacked-area-chart-d3-react/static/js/2.7c2aaf08.chunk.js",
-    "static/js/2.7c2aaf08.chunk.js.map": "/stacked-area-chart-d3-react/static/js/2.7c2aaf08.chunk.js.map",
+    "static/js/2.4f8b046f.chunk.js": "/stacked-area-chart-d3-react/static/js/2.4f8b046f.chunk.js",
+    "static/js/2.4f8b046f.chunk.js.map": "/stacked-area-chart-d3-react/static/js/2.4f8b046f.chunk.js.map",
     "index.html": "/stacked-area-chart-d3-react/index.html",
-    "static/css/main.3f9ef032.chunk.css.map": "/stacked-area-chart-d3-react/static/css/main.3f9ef032.chunk.css.map",
-    "static/js/2.7c2aaf08.chunk.js.LICENSE.txt": "/stacked-area-chart-d3-react/static/js/2.7c2aaf08.chunk.js.LICENSE.txt"
+    "static/css/main.ea5f3c37.chunk.css.map": "/stacked-area-chart-d3-react/static/css/main.ea5f3c37.chunk.css.map",
+    "static/js/2.4f8b046f.chunk.js.LICENSE.txt": "/stacked-area-chart-d3-react/static/js/2.4f8b046f.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
     "static/js/runtime-main.28561014.js",
-    "static/js/2.7c2aaf08.chunk.js",
-    "static/css/main.3f9ef032.chunk.css",
-    "static/js/main.9783c834.chunk.js"
+    "static/js/2.4f8b046f.chunk.js",
+    "static/css/main.ea5f3c37.chunk.css",
+    "static/js/main.61fe9155.chunk.js"
   ]
 }
