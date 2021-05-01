@@ -1,5 +1,9 @@
 import React, { Component } from 'react'
-import * as d3 from "d3";
+import {
+  scaleOrdinal,
+  schemeCategory10,
+  timeFormat,
+} from "d3";
 
 import StackedAreaChart from 'stacked-area-chart-d3-react'
 
@@ -24,12 +28,15 @@ const data = [
 
 const keys = ["apples", "bananas", "cherries", "durians"];
 
-const color = d3.scaleOrdinal().domain(keys).range(d3.schemeCategory10);
+const color = scaleOrdinal().domain(keys).range(schemeCategory10);
 
 export default class App extends Component {
   render () {
     return (
-      <div>
+      <div className="container">
+        <h1>Responsive Stacked Area Chart</h1>
+        <p><i>Built using D3.js and React.js</i></p>
+        <p><a href="https://github.com/harryli0088/stacked-area-chart-d3-react" target="_blank" rel="noopener noreferrer">https://github.com/harryli0088/stacked-area-chart-d3-react</a></p>
         <StackedAreaChart
           data={data}
           keys={keys}
@@ -39,14 +46,14 @@ export default class App extends Component {
           axisStroke="#ccc"
           axisStrokeWidth={2}
           colorFunction={color}
-          dateFormat={d3.timeFormat("%Y")}
+          dateFormat={timeFormat("%Y")}
           dots={true}
           dotsRadius={10} //could be string or number
           dotsStroke={"#aaa"}
           dotsStrokeWidth={2}
           dotsFilter={"brightness(1.25)"}
-          height={500}
-          margin={{top: 20, right: 30, bottom: 30, left: 60}}
+          height={300}
+          margin={{top: 20, right: 0, bottom: 30, left: 50}}
           onClickHandler={function(e, key, dataIndex) {}}
           onMouseOverHandler={function(e, key, dataIndex) {}}
           xTickSize={5}
@@ -56,16 +63,20 @@ export default class App extends Component {
           yMaxTicks={5}
         />
 
-        <svg>
-          <g>
-            {keys.map((k,i) =>
-              <g transform={"translate(0,"+(i*30)+")"} key={i}>
-                <rect x="0" y="0" width="25" height="25" fill={color(k)}></rect>
-                <text x="30" y="18">{k}</text>
-              </g>
-            )}
-          </g>
-        </svg>
+        <br/>
+
+        <div>
+          <svg>
+            <g>
+              {keys.map((k,i) =>
+                <g transform={"translate(0,"+(i*30)+")"} key={i}>
+                  <rect x="0" y="0" width="25" height="25" fill={color(k)}></rect>
+                  <text x="30" y="18">{k}</text>
+                </g>
+              )}
+            </g>
+          </svg>
+        </div>
       </div>
     )
   }

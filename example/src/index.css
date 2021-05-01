@@ -2,4 +2,26 @@ body {
   margin: 0;
   padding: 0;
   font-family: sans-serif;
+  letter-spacing: 1px;
+}
+
+:root {
+  --tablet-padding:calc(50vw - 300px + 1em);
+  --desktop-padding:calc(50vw - 400px);
+}
+
+.container  {
+	padding: 1em;
+}
+@media only screen and (min-width: 600px) {
+	.container  {
+		padding-left: var(--tablet-padding);
+		padding-right: var(--tablet-padding);
+	}
+}
+@media only screen and (min-width: 1000px) {
+	.container  {
+		padding-left: var(--desktop-padding);
+		padding-right: var(--desktop-padding);
+	}
 }
