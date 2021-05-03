@@ -60,10 +60,10 @@ export default class App extends Component {
           colorFunction={color}
           dateFormat={d3.timeFormat("%Y")}
           dots={true}
+          dotsFilter={"brightness(1.25)"}
           dotsRadius={10} //could be string or number
           dotsStroke={"#aaa"}
           dotsStrokeWidth={2}
-          dotsFilter={"brightness(1.25)"}
           height={500}
           margin={{top: 20, right: 30, bottom: 30, left: 60}}
           onClickHandler={function(e, key, dataIndex) {}}
@@ -106,25 +106,26 @@ const data = [
 - `keys` {Array} Required array of strings
 
 Optional props
-- `color` {Function} defaults to `d3.scaleOrdinal().domain(keys).range(d3.schemeCategory10)`
-- `height` {Number} defaults to `500`
-- `margin` {Object} defaults to `{top: 20, right: 30, bottom: 30, left: 60}`
-- `dateFormat` {Function} defaults to `d3.timeFormat("%Y")`
-- `yFormat` {Function} defaults to `function(y) { return y }`
-- `xTickSize` {Number} defaults to `5`
-- `yTickSize` {Number} defaults to `5`
-- `xTicksSkip` {Number} how many x ticks to skip (1 shows every tick, 2 shows every other tick, etc), defaults to `1`
-- `yMaxTicks` {Number} defaults to `5`
+- `areaOpacity` {Number | String} defaults to `"0.9"`
 - `axisStroke` {String} defaults to `"#ccc"`
 - `axisStrokeWidth` {Number} defaults to `2`
-- `areaOpacity` {Number | String} defaults to `"0.9"`
-- `onMouseOverHandler` {Function} defaults to `function(e, key, dataIndex) {}`
-- `onClickHandler` {Function} defaults to `function(e, key, dataIndex) {}`
+- `color` {Function} defaults to `d3.scaleOrdinal().domain(keys).range(d3.schemeCategory10)`
+- `dateFormat` {Function} defaults to `d3.timeFormat("%Y")`
 - `dots` {Boolean} whether or not to show dots on hover, defaults to `true`
+- `dotsFilter` {String} defaults to `"brightness(1.25)"`
 - `dotsRadius` {Number | String} defaults to `10`
 - `dotStroke` {String} defaults to `"#aaa"`
 - `dotStrokeWidth` {Number} defaults to `2`
-- `dotsFilter` {String} defaults to `"brightness(1.25)"`
+- `height` {Number} defaults to `500`
+- `margin` {Object} defaults to `{top: 20, right: 30, bottom: 30, left: 60}`
+- `onClickHandler` {Function} defaults to `function(e, key, dataIndex) {}`
+- `onMouseOverHandler` {Function} defaults to `function(e, key, dataIndex) {}`
+- `xTickSize` {Number} defaults to `5`
+- `xTicksSkip` {Number} how many x ticks to skip (1 shows every tick, 2 shows every other tick, etc), defaults to `1`
+- `yFormat` {Function} defaults to `function(y) { return y }`
+- `yMaxTicks` {Number} defaults to `5`
+- `yTickSize` {Number} defaults to `5`
+
 
 ## Acknowledgments
 Built primarily from this example: https://observablehq.com/@d3/stacked-area-chart

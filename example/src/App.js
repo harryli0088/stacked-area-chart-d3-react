@@ -48,10 +48,10 @@ export default class App extends Component {
           colorFunction={color}
           dateFormat={timeFormat("%Y")}
           dots={true}
+          dotsFilter={"brightness(1.25)"}
           dotsRadius={10} //could be string or number
           dotsStroke={"#aaa"}
           dotsStrokeWidth={2}
-          dotsFilter={"brightness(1.25)"}
           height={300}
           margin={{top: 20, right: 0, bottom: 30, left: 50}}
           onClickHandler={function(e, key, dataIndex) {}}

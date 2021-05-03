@@ -4,18 +4,20 @@ import { scaleLinear } from "d3";
 
 export default function getYAxisData(
   data: DataPointType[],
+  keys: string[],
   height: number,
   margin: MarginType,
   yMaxTicks: number,
 ) {
   //calculate the maximum y value we have in our stacked area chart
   const yMax = data.reduce((maxSum, d) => { //reduce over each data point
-    const sum = Object.values(d).reduce((sum, value) => { //reduce over all the keys in this data point
-      if(typeof value === "number") { //if this value is a number (ie not the date)
+    const sum = Object.entries(d).reduce((sum, [key, value]) => { //reduce over all the keys in this data point
+      //if this value is a number (ie not the date) AND the key is valid
+      if(typeof value === "number" && keys.includes(key)) {
         return sum + value //return the sum plus the value
       }
       return sum //else ignore the value
-    }, 0)
+    }, 0) as number
     if(sum > maxSum) { //if this sum is higher
       return sum //return it
     }

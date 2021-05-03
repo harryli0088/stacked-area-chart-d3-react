@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import {
   area as d3Area,
   extent,
-  max,
   scaleOrdinal,
   scaleUtc,
   schemeCategory10,
@@ -16,9 +15,8 @@ import {
 import getYAxisData from "./utils/getYAxisData"
 
 export type DataPointType = {
+  [key:string]: number | Date,
   date: Date,
-} & {
-  [key:string]: number
 }
 
 export type MarginType = {top: number, right: number, bottom: number, left: number}
@@ -33,10 +31,10 @@ type Props = {
   colorFunction: (key:string) => string,
   dateFormat: (date:Date) => string,
   dots: boolean,
+  dotsFilter: string,
   dotsRadius: number,
   dotsStroke: string,
   dotsStrokeWidth: number,
-  dotsFilter: string,
   height: number,
   margin: MarginType,
   onClickHandler: (e: CustomEventType, key:string, dataIndex: number | null) => void,
@@ -149,6 +147,7 @@ function StackedAreaChart (props:Props) {
   ), [keys])
 
   const series = useMemo(
+    //@ts-ignore
     () => stack(data),
     [data, stack]
   );
@@ -164,8 +163,8 @@ function StackedAreaChart (props:Props) {
     yTicks,
     yScale,
   } = useMemo(
-    () => getYAxisData(data, height, margin, yMaxTicks),
-    [data, height, margin, yMaxTicks]
+    () => getYAxisData(data, keys, height, margin, yMaxTicks),
+    [data, height, keys, margin, yMaxTicks]
   )
 
   const rectWidth = useMemo(
@@ -216,47 +215,40 @@ function StackedAreaChart (props:Props) {
         </g>
 
         <g>
-          {series.map((d,i) => {
+          {series.map((d:{key:string},i:number) => {
             if(d[0]) { //if there is a data point to show
-              //determine the element and properties to render
-              const {
-                Element,
-                properties,
-              } = (() => {
-                //if there are multiple data points, render a path
-                if(data.length > 1) {
-                  return {
-                    Element: "path",
-                    properties: { d:area(d) }
-                  }
-                }
+              const sharedProps = {
+                key: i,
+                fill: colorFunction(d.key),
+                opacity: areaOpacity,
+                onClick: (e: React.MouseEvent<SVGPathElement | SVGRectElement>)  => onClickHandler(e, d.key, xHoverIndex),
+                onTouchStart: (e: React.TouchEvent<SVGPathElement | SVGRectElement>) => onClickHandler(e, d.key, xHoverIndex),
+                onTouchMove: (e: React.TouchEvent<SVGPathElement | SVGRectElement>) => mouseMove(e, d.key),
+                onMouseMove: (e: React.MouseEvent<SVGPathElement | SVGRectElement>) => mouseMove(e, d.key),
+              }
+              const title = <title>{getTitle(d.key, dateFormat)}</title>
 
-                //else render a stacked bar chart
-                const y1 = yScale(d[0][1])
-                return {
-                  Element: "rect",
-                  properties: {
-                    x: xScale(d[0].data.date) - rectWidth/2,
-                    width: rectWidth,
-                    y: y1,
-                    height: yScale(d[0][0]) - y1,
-                  }
-                }
-              })() //self-invoking function
 
+              //if there are multiple data points, render a path
+              if(data.length > 1) {
+                return (
+                  <path
+                    {...sharedProps}
+                    d={area(d)}
+                  >{title}</path>
+                )
+              }
+
+              //else render a stacked bar chart
+              const y1 = yScale(d[0][1])
               return (
-                <Element
-                  {...properties}
-                  key={i}
-                  fill={colorFunction(d.key)}
-                  opacity={areaOpacity}
-                  onClick={(e: React.MouseEvent<SVGPathElement | SVGRectElement>)  => onClickHandler(e, d.key, xHoverIndex)}
-                  onTouchStart={(e: React.TouchEvent<SVGPathElement | SVGRectElement>) => onClickHandler(e, d.key, xHoverIndex)}
-                  onTouchMove={(e: React.TouchEvent<SVGPathElement | SVGRectElement>) => mouseMove(e, d.key)}
-                  onMouseMove={(e: React.MouseEvent<SVGPathElement | SVGRectElement>) => mouseMove(e, d.key)}
-                >
-                  <title>{getTitle(d.key, dateFormat)}</title>
-                </Element>
+                <rect
+                  {...sharedProps}
+                  height={yScale(d[0][0]) - y1}
+                  width={rectWidth}
+                  x={xScale(d[0].data.date) - rectWidth/2}
+                  y={y1}
+                >{title}</rect>
               )
             }
             return null
@@ -314,13 +306,13 @@ StackedAreaChart.propTypes = {
   colorFunction: PropTypes.func,
   dateFormat: PropTypes.func,
   dots: PropTypes.bool,
+  dotsFilter: PropTypes.string,
   dotsRadius: PropTypes.oneOfType([
     PropTypes.string,
     PropTypes.number
   ]),
   dotsStroke: PropTypes.string,
   dotsStrokeWidth: PropTypes.number,
-  dotsFilter: PropTypes.string,
   height: PropTypes.number,
   margin: PropTypes.object,
   onClickHandler: PropTypes.func,
